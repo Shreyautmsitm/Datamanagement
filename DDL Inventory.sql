@@ -62,6 +62,7 @@ CREATE TABLE store (
   store_phone    CHAR(12)       NOT NULL,
   address_line_1 VARCHAR(30),
   address_line_2 VARCHAR(30)
+  CONSTRAINT    store_status_check  CHECK (store_status IN ('A','I'))
 );
  
 CREATE TABLE department (
