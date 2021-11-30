@@ -20,51 +20,49 @@ START WITH 1 INCREMENT BY 1;
 ---Dropping Tables
 DROP TABLE product_sales_linking;
 DROP TABLE product_offer_linking;
-DROP TABLE SALES_DETAILS;
-DROP TABLE SALES_HEADER;
-DROP TABLE Special_offer;
-DROP TABLE CATEGORY;
-DROP TABLE DEPARTMENT;
-DROP TABLE STORE;
+DROP TABLE sales_details;
+DROP TABLE sales_header;
+DROP TABLE special_offer;
+DROP TABLE category;
+DROP TABLE department;
+DROP TABLE store;
 
 
 ---creating tables
-CREATE TABLE STORE (
-  Store_id       NUMBER NOT NULL  PRIMARY KEY,
-  location_id    NUMBER   NOT NULL,
+CREATE TABLE store (
+  store_id       NUMBER NOT NULL  PRIMARY KEY,
   store_status   CHAR(1) NOT NULL,
   store_name     VARCHAR(30) NOT NULL UNIQUE,
   store_phone    CHAR(12) NOT NULL,
   address_line_1 VARCHAR(30),
   address_line_2 VARCHAR(30),
- 
   CONSTRAINT    location_id_fk    FOREIGN KEY  (location_id)   REFERENCES LOCATION (location_id)
  
 );
 
-CREATE TABLE SALES_HEADER (
-  Sales_order_id    NUMBER      DEFAULT sales_order_id_seq.NEXTVAL   PRIMARY KEY,
-  Customer_id       NUMBER NOT NULL,
+CREATE TABLE sales_header (
+  sales_order_id    NUMBER      DEFAULT sales_order_id_seq.NEXTVAL   PRIMARY KEY,
+  customer_id       NUMBER NOT NULL,
   store_id          NUMBER NOT NULL,
   total_qty         NUMBER NOT NULL,
   date_of_purchase  DATE NOT NULL,
   total_price_order NUMBER DEFAULT 0.00,
   tax_amount        as (0.085 * total_price_order),
   grand_total       as (total_price_order+(0.085 * total_price_order)),
-  status            Char(1) NOT NULL,
-  CONSTRAINT    Customer_id_fk   FOREIGN KEY (Customer_id)  REFERENCES Customers (Customer_id),
+  status            CHAR(1) NOT NULL,
+  CONSTRAINT    customer_id_fk   FOREIGN KEY (customer_id)  REFERENCES customers (customer_id),
   CONSTRAINT    store_id_fk   FOREIGN KEY (store_id)  REFERENCES Store (store_id),
   CONSTRAINT    status_check  CHECK (STATUS IN ('R','P'))
  
  ); 
  
- CREATE TABLE Special_offer (
-  Offer_id          NUMBER     DEFAULT offer_id_seq.NEXTVAL   PRIMARY KEY,
+ CREATE TABLE special_offer (
+  offer_id          NUMBER     DEFAULT offer_id_seq.NEXTVAL   PRIMARY KEY,
   product_id        NUMBER NOT NULL,
   discount_rate     NUMBER NOT NULL,
   start_date        DATE DEFAULT SYSDATE,   
   end_date          DATE DEFAULT (SYSDATE+90),
-  offer_status      Char(1),
+  offer_status      CHAR(1),
  
   CONSTRAINT    product_offer_id_fk   FOREIGN KEY (product_id)  REFERENCES Product_detail (product_id),
   CONSTRAINT    offer_status_check  CHECK (offer_status IN ('A','I'))
@@ -72,9 +70,9 @@ CREATE TABLE SALES_HEADER (
  ); 
  
 
-CREATE TABLE SALES_DETAILS (
-  Sales_id          NUMBER     DEFAULT sales_id_seq.NEXTVAL   PRIMARY KEY,
-  Sales_order_id    NUMBER  NOT NULL,
+CREATE TABLE sales_details (
+  sales_id          NUMBER     DEFAULT sales_id_seq.NEXTVAL   PRIMARY KEY,
+  sales_order_id    NUMBER  NOT NULL,
   product_id        NUMBER NOT NULL,
   offer_id          NUMBER ,
   product_qty       NUMBER NOT NULL,
@@ -82,9 +80,9 @@ CREATE TABLE SALES_DETAILS (
   discount_rate     NUMBER DEFAULT 0.00,
   discounted_price  as ((discount_rate/100)*unit_price),
   total_price       as ((product_qty * unit_price)-((discount_rate/100)*unit_price)),
-  CONSTRAINT    Sales_order_id_fk   FOREIGN KEY (Sales_order_id)  REFERENCES SALES_HEADER (Sales_order_id),
-  CONSTRAINT    product_id_fk   FOREIGN KEY (product_id)  REFERENCES Product_detail (product_id),
-  CONSTRAINT    offer_id_fk   FOREIGN KEY (offer_id)  REFERENCES Special_offer (offer_id)
+  CONSTRAINT    sales_order_id_fk   FOREIGN KEY (sales_order_id)  REFERENCES SALES_HEADER (sales_order_id),
+  CONSTRAINT    product_id_fk   FOREIGN KEY (product_id)  REFERENCES product_detail (product_id),
+  CONSTRAINT    offer_id_fk   FOREIGN KEY (offer_id)  REFERENCES special_offer (offer_id)
 
  
  ); 
@@ -93,19 +91,19 @@ CREATE TABLE SALES_DETAILS (
 
 CREATE TABLE product_sales_linking (
   product_id     NUMBER NOT NULL,
-  Sales_id       NUMBER NOT NULL,
-  CONSTRAINT    product_sales_pk   PRIMARY KEY (product_id, Sales_id),
+  sales_id       NUMBER NOT NULL,
+  CONSTRAINT    product_sales_pk   PRIMARY KEY (product_id, sales_id),
   CONSTRAINT    product_linking_id_fk1     FOREIGN KEY (product_id)  REFERENCES Product_detail (product_id),
-  CONSTRAINT    Sales_linking_id_fk2      FOREIGN KEY (Sales_id)   REFERENCES SALES_DETAILS (Sales_id)
+  CONSTRAINT    Sales_linking_id_fk2      FOREIGN KEY (Sales_id)   REFERENCES SALES_DETAILS (sales_id)
 );
 
 
 CREATE TABLE product_offer_linking (
   product_id     NUMBER NOT NULL,
-  Offer_id       NUMBER NOT NULL,
+  offer_id       NUMBER NOT NULL,
   CONSTRAINT    product_offer_pk   PRIMARY KEY (product_id, Offer_id),
-  CONSTRAINT    product_offer_id_fk1     FOREIGN KEY (product_id)  REFERENCES Product_detail (product_id),
-  CONSTRAINT    offer_linking_id_fk2      FOREIGN KEY (offer_id)   REFERENCES Special_offer (Offer_id)
+  CONSTRAINT    product_offer_id_fk1     FOREIGN KEY (product_id)  REFERENCES product_detail (product_id),
+  CONSTRAINT    offer_linking_id_fk2      FOREIGN KEY (offer_id)   REFERENCES special_offer (offer_id)
 );
 
 
@@ -128,10 +126,13 @@ CREATE TABLE CATEGORY (
 
 ---STORE
 
-insert into store(Store_id ,location_id,store_status,store_name,store_phone,address_line_1) values (200,1,'A','MART',120,'abcg1');
-insert into store(Store_id ,location_id,store_status,store_name,store_phone,address_line_1 ) values (201,2,'A','MARTJ',120,'abcg2');
-insert into store(Store_id ,location_id,store_status,store_name,store_phone,address_line_1 ,address_line_2) values (202,3,'I','MARTL',120,'abcg1','561');
-
+-- store inserts
+INSERT INTO store(store_id, store_status, store_name, store_phone, address_line_1) 
+            VALUES (200, 'A', 'MART', '827-248-2399', '700 Lighthouse Ln.');
+INSERT INTO store(store_id, location_id, store_status, store_name, store_phone, address_line_1 ) 
+            VALUES (201, 'A', 'MARTJ', '482-484-2841', '8822 Corner St.');
+INSERT INTO store(store_id, location_id, store_status, store_name, store_phone, address_line_1 , address_line_2) 
+            VALUES (202,'I', 'MARTL', '229-339-2910', '2732 Lucky Av.', 'Unit 561');
 
 --SALES_HEADER
 insert into sales_header (SALES_ORDER_ID,CUSTOMER_ID,STORE_ID,TOTAL_QTY,DATE_OF_PURCHASE,STATUS) values(101,10,200,5,sysdate,'P');
@@ -170,13 +171,18 @@ insert into product_offer_linking ( product_id,Offer_id) values (400,12);
 
 --DEPARTMENT
 
-insert into DEPARTMENT (department_id,department_name) values (110,'frozen food');
-insert into DEPARTMENT (department_id,department_name) values (111,'Home and Outdoor'); 
+INSERT INTO department (department_id, department_name) 
+            VALUES (110, 'frozen food');
+INSERT INTO department (department_id, department_name) 
+            VALUES (111, 'Home and Outdoor');
 
 --CATEGORY
-insert into CATEGORY (category_id,department_id,category_name ) values (210,110,'veggies');
-insert into CATEGORY (category_id,department_id,category_name ) values (211,110,'nuggets');
-insert into CATEGORY (category_id,department_id,category_name ) values (212,111,'kitchen');
+INSERT INTO category (category_id, department_id, category_name) 
+            VALUES (210, 110, 'veggies');
+INSERT INTO category (category_id, department_id, category_name) 
+            VALUES (211,110, 'nuggets');
+INSERT INTO category (category_id, department_id, category_name) 
+            VALUES (212, 111, 'kitchen');
 
 --Update statments for total_price in sales_header
 
