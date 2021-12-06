@@ -61,7 +61,7 @@ CREATE TABLE store (
   store_name     VARCHAR(30)    NOT NULL UNIQUE,
   store_phone    CHAR(12)       NOT NULL,
   address_line_1 VARCHAR(30),
-  address_line_2 VARCHAR(30)
+  address_line_2 VARCHAR(30),
   CONSTRAINT    store_status_check  CHECK (store_status IN ('A','I'))
 );
  
@@ -106,7 +106,7 @@ CREATE TABLE location (
 
 CREATE TABLE product_detail (
     product_id          NUMBER(6)   DEFAULT product_id_seq.NEXTVAL   PRIMARY KEY,
-    category_id         NUMBER(2)   NOT NULL,
+    category_id         NUMBER(5)   NOT NULL,
     vendor_id           NUMBER(5)   NOT NULL,
     warehouse_id        NUMBER(5)   NOT NULL,
     product_name        VARCHAR(50) NOT NULL, 
@@ -174,9 +174,9 @@ COMMIT;
 -- store inserts
 INSERT INTO store(store_id, store_status, store_name, store_phone, address_line_1) 
             VALUES (200, 'A', 'MART', '827-248-2399', '700 Lighthouse Ln.');
-INSERT INTO store(store_id, location_id, store_status, store_name, store_phone, address_line_1 ) 
+INSERT INTO store(store_id, store_status, store_name, store_phone, address_line_1 ) 
             VALUES (201, 'A', 'MARTJ', '482-484-2841', '8822 Corner St.');
-INSERT INTO store(store_id, location_id, store_status, store_name, store_phone, address_line_1 , address_line_2) 
+INSERT INTO store(store_id, store_status, store_name, store_phone, address_line_1 , address_line_2) 
             VALUES (202,'I', 'MARTL', '229-339-2910', '2732 Lucky Av.', 'Unit 561');
 COMMIT;
 
